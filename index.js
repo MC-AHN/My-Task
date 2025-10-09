@@ -6,6 +6,7 @@ import { users } from './db/schema.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { setCookie } from 'hono/cookie';
+import { getCookie } from 'hono/cookie';
 
 const app = new Hono();
 
@@ -44,7 +45,19 @@ app.post('/api/login', async (c) => {
     return c.json({ success: true, message: 'Login Berhasil' });
 })
 
-// jalankan server
+// Authentication
+app.get('/api/me', (c) => {
+    const token = getCookie(c, 'token');
+    if (!token) return c.json({ success: false, message: 'Unauthorized' }, 401);
+    try {
+        const user = jwt.verify(token, process.env.JWT_SECRET);
+        return c.json({ success: true, data: user });
+    } catch (error) {
+        return c.json({ success: false, message: 'Unauthorized' }, 401);
+    }
+})
+
+// Run server
 const port = 5002;
 console.log(`🚀 Server is running on http://localhost:${port}`);
 serve({ fetch: app.fetch, port});
