@@ -57,6 +57,12 @@ app.get('/api/me', (c) => {
     }
 })
 
+// Logout
+app.post('/api/logout', (c) => {
+    setCookie(c, 'token', '', { maxAge: -1 });
+    return c.json({ success: true, message: 'Logout berhasil' });
+});
+
 // Run server
 const port = 5002;
 console.log(`🚀 Server is running on http://localhost:${port}`);
