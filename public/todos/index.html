@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Todos</title>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Hello, <span id="username"></span>!</h1>
+        <a href="/logout/">Logout</a>
+        </header>
+
+        <main>
+            <h2>You'r Todos</h2>
+            <form id="addTodoform">
+                <input type="text" id="noteInput" placeholder="What needs to be done?" required>
+                <button type="submit">Add</button>
+            </form>
+            <ul id="todoList"></ul>
+        </main>
+    </div>
+
+    <script>
+        const usernameSpan = document.getElementById('username');
+        const addTodoForm = document.getElementById('addTodoForm')
+        const noteInput = document.getElementById('noteInput')
+        const todoList = document.getElementById('todoList')
+
+        // check login
+        (async () => {
+            try {
+                const response = await fetch('/api/me');
+                if (!response.ok) {
+                    window.location.href = '/login/';
+                    return;
+                }
+                const { success, data } = await response.json();
+                if (success) {
+                    usernameSpan.textContent = data.username;
+                    fetchTodos();
+                } else {
+                    window.location.href = '/login/'
+                }
+            } catch (error) {
+                window.location.href = '/login/'
+            }
+        })();
+        
+        // get and sbow todos
+        const fetchTodos = async () => {
+            try {
+                const response = await fetch('/api/todos');
+                const { success, data } = await response.json();
+                if (success) {
+                    todoList.innerHTML = '';
+                    data.forEach((todo) => {
+                        const li = document.createElement('li');
+                        li.textContent = todo.note
+                        todoList.appendChild(li)
+                    });
+                }
+            } catch (error) {
+                console.error('Failed get todos', error)
+            }
+        }
+
+        // add todo
+        addTodoForm.addEventListener('submit', async (e) => {
+            e.preventDefault()
+            const note = noteInput.value;
+            if (!note) return;
+
+            try {
+                const response = await fetch('/api/todos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ note }),
+                })
+                const { success } = await response.json();
+                if (success) {
+                    noteInput.value = '';
+                    fetchTodos();
+                }
+            } catch (error) {
+                console.error('Failed add todo', error);
+            }
+        })
+    </script>
+</body>
+</html>
