@@ -34,6 +34,12 @@
                     body: JSON.stringify({ username, password })
                 })
                 
+                if(!response.ok) {
+                    const errorText = await response.text();
+
+                    messageDiv.textContent = `Login failed: Server return status ${response.status}, message: ${errorText.substring(0, 50)}...`;
+                }
+
                 const result = await response.json()
 
                 if (result.success) {
@@ -42,7 +48,8 @@
                     messageDiv.textContent = result.message || 'Login failed';
                 }
             } catch (error) {
-                messageDiv.textContent = 'Error, Please try again ' + error;
+                console.error(`Network or Parsing Error:`, error);
+                messageDiv.textContent = 'Connection or data parsing Error, Please try again.';
             }
         })
     </script>
