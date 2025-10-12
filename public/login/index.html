@@ -38,6 +38,8 @@
                     const errorText = await response.text();
 
                     messageDiv.textContent = `Login failed: Server return status ${response.status}, message: ${errorText.substring(0, 50)}...`;
+
+                    return;
                 }
 
                 const result = await response.json()
