@@ -7,13 +7,11 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { setCookie } from 'hono/cookie';
 import { getCookie } from 'hono/cookie';
+import { serveStatic } from '@hono/node-server/serve-static';
 
 const app = new Hono();
 
-app.get('/', (c) => {
-    return c.html('<h1>Tim Pengembang</h1><h2>Muhammad</h2>')
-});
-
+app.use('/*', serveStatic({ root: './public' }));
 
 // Register 
 app.post('/api/register', async (c) => {

@@ -13,8 +13,8 @@
         </header>
 
         <main>
-            <h2>You'r Todos</h2>
-            <form id="addTodoform">
+            <h2>Your Todos</h2>
+            <form id="addTodoForm">
                 <input type="text" id="noteInput" placeholder="What needs to be done?" required>
                 <button type="submit">Add</button>
             </form>
@@ -24,9 +24,9 @@
 
     <script>
         const usernameSpan = document.getElementById('username');
-        const addTodoForm = document.getElementById('addTodoForm')
-        const noteInput = document.getElementById('noteInput')
-        const todoList = document.getElementById('todoList')
+        const addTodoForm = document.getElementById('addTodoForm');
+        const noteInput = document.getElementById('noteInput');
+        const todoList = document.getElementById('todoList');
 
         // check login
         (async () => {
@@ -41,10 +41,10 @@
                     usernameSpan.textContent = data.username;
                     fetchTodos();
                 } else {
-                    window.location.href = '/login/'
+                    window.location.href = '/login/';
                 }
             } catch (error) {
-                window.location.href = '/login/'
+                window.location.href = '/login/';
             }
         })();
         
