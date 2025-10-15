@@ -88,12 +88,11 @@ app.get('/api/todos', async (c) => {
     }
 })
 
+
+
 // Run server
-if(process.env.VERCEL) {
-    console.log('Running on Vercel')
-    globalThis.app = app;
-} else {
-    const port = 5002;
-    console.log(`🚀 Server is running on http://localhost:${port}`);
-    serve({ fetch: app.fetch, port});
-}
+
+const port = 5002;
+console.log(`🚀 Server is running on http://localhost:${port}`);
+serve({ fetch: app.fetch, port});
+
