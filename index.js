@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken';
 import { setCookie } from 'hono/cookie';
 import { getCookie } from 'hono/cookie';
 import { serveStatic } from '@hono/node-server/serve-static';
+import { and, eq } from 'drizzle-orm'; // Tambahkan ini di file API utama kamu
 
 const app = new Hono();
 
@@ -88,7 +89,21 @@ app.get('/api/todos', async (c) => {
     }
 })
 
-
+// Update Status 
+app.put('api/todos/:id/status', async (c) => { 
+    const token = getCookie(c, 'token');
+    if (!token) return c.json({ success: false, message: 'Unauthorized' }, 401);
+    try {
+        const user = jwt.verify(token, process.env.JWT_SECRET);
+        const id = parseInt(c.req.param('id')); 
+        const { status } = await c.req.json(); 
+        const updateTodo = await db.update(todos).set({ status }).where(and(eq(todos.id, id), eq(todos.userId, user.id))).returning()
+        if(updateTodo.length === 0) return c.json({ success: false, message: 'Todo not found' }, 404);
+        return c.json({ success: true, data: updateTodo[0] });
+    } catch (error) {
+        return c.json({ success: false, message: 'Unauthorized' }, 401);
+    }
+})
 
 // Run server
 
