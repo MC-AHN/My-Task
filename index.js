@@ -9,6 +9,8 @@ import { setCookie } from 'hono/cookie';
 import { getCookie } from 'hono/cookie';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { and, eq } from 'drizzle-orm'; // Tambahkan ini di file API utama kamu
+import { isMiddleware } from 'hono/utils/handler';
+import { auth } from 'hono/utils/basic-auth';
 
 const app = new Hono();
 
@@ -89,12 +91,36 @@ app.get('/api/todos', async (c) => {
     }
 })
 
-// Update Status 
-app.put('api/todos/:id/status', async (c) => { 
-    const token = getCookie(c, 'token');
-    if (!token) return c.json({ success: false, message: 'Unauthorized' }, 401);
+const authMiddleware = async (c, next) => {
+    // 1. Ambil Kunci (Token) dari Cookie
+    const token = getCookie(c, 'token'); 
+    
+    // 2. Jika Kunci Hilang, Tolak Akses
+    if (!token) {
+        return c.json({ success: false, message: 'Unauthorized: Token is missing' }, 401);
+    }
+    
     try {
-        const user = jwt.verify(token, process.env.JWT_SECRET);
+        // 3. Verifikasi Kunci dan Buka Isinya
+        const userPayload = jwt.verify(token, process.env.JWT_SECRET); 
+        
+        // 4. Simpan Data User ke Konteks (Ini Intinya!)
+        // Baris ini membuat const user = c.get('user') tidak undefined
+        c.set('user', userPayload); 
+
+        // 5. Lanjutkan ke Handler API (PUT/DELETE)
+        await next(); 
+        
+    } catch (error) {
+        // 6. Jika Kunci Palsu/Kedaluwarsa, Tolak Akses
+        return c.json({ success: false, message: 'Unauthorized: Invalid token' }, 401);
+    }
+};
+
+// Update Status 
+app.put('api/todos/:id/status', authMiddleware, async (c) => { 
+    try {
+        const user = c.get('user');
         const id = parseInt(c.req.param('id')); 
         const { status } = await c.req.json(); 
         const updateTodo = await db.update(todos).set({ status }).where(and(eq(todos.id, id), eq(todos.userId, user.id))).returning()
@@ -104,6 +130,32 @@ app.put('api/todos/:id/status', async (c) => {
         return c.json({ success: false, message: 'Unauthorized' }, 401);
     }
 })
+
+// Delete todo
+// DI SERVER HONO/NODE.JS KAMU
+
+app.delete('/api/todos/:id', authMiddleware, async (c) => {
+    // Di sini, 'authMiddleware' sudah memastikan user ada
+    const user = c.get('user'); 
+    const id = parseInt(c.req.param('id'));
+
+    // Gunakan delete() Drizzle
+    const deletedTodo = await db.delete(todos)
+        .where(
+            and(
+                eq(todos.id, id),
+                eq(todos.userId, user.id) // 🔑 HANYA HAPUS JIKA MILIKNYA
+            )
+        )
+        .returning({ id: todos.id }); // Minta ID yang dihapus
+
+    // Jika tidak ada baris yang dihapus (ID salah atau milik orang lain)
+    if (deletedTodo.length === 0) {
+        return c.json({ success: false, message: 'Todo not found or unauthorized' }, 404);
+    }
+
+    return c.json({ success: true, message: 'Todo deleted successfully' });
+});
 
 // Run server
 

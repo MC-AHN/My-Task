@@ -57,7 +57,8 @@
                     todoList.innerHTML = '';
                     data.forEach((todo) => {
                         const li = document.createElement('li');
-                        li.innerHTML = `<input type="checkbox" id='check${todo.id}' /><span id="span${todo.id}">${todo.note}</span>`
+                        li.id = `todo${todo.id}`
+                        li.innerHTML = `<input type="checkbox" id='check${todo.id}' /><span id="span${todo.id}">${todo.note}</span><button id='del${todo.id}'>delete</button>`
                         todoList.appendChild(li);
                         document.getElementById(`check${todo.id}`).addEventListener("change", async function() {
                             const newStatus = this.checked ? "completed": "pending";
@@ -78,6 +79,30 @@
                             } catch (error) {
                                 this.checked = !this.checked;
                                 console.error("Error, message", error);
+                            }
+                        })
+                        document.getElementById(`del${todo.id}`).addEventListener("click", async function() {
+                            const ask = confirm("Are you sure?")
+                            try {
+                                if (ask) {
+                                    const response = await fetch(`/api/todos/${todo.id}`, {
+                                        method: 'DELETE',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        credentials: 'include'
+                                    });
+
+                                    if (response.ok) {
+                                        const listItem = document.getElementById(`todo${todo.id}`)
+                                        if (listItem) {
+                                            listItem.remove()
+                                        }
+                                        console.log(`deleted successfully id ${todo.id}`)
+                                    } else {
+                                        alert('failed remove todo, try again')
+                                    }
+                                }
+                            } catch (error) {
+                                console.error('Error while remove', error)
                             }
                         })
                     });
