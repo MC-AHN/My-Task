@@ -85,9 +85,9 @@ My-Task/
 ---
 
 ## 📸 Screenshot
-Example:  
+Here is the Todos page from My Task App:
 ```
-![My Task App Screenshot in Todos page](./public/asset/todos-image.png)
+![My Task App Screenshot](https://github.com/MC-AHN/My-Task/blob/dcab4e27c28b18ac72c0bebc763bf3725443ef3a/public/asset/todos-image.png?raw=true)
 
 ```
 
