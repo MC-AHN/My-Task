@@ -58,39 +58,7 @@ app.get('/api/me', (c) => {
     }
 })
 
-// Logout
-app.post('/api/logout', (c) => {
-    setCookie(c, 'token', '', { maxAge: -1 });
-    return c.json({ success: true, message: 'Logout berhasil' });
-});
-
-// Api add Todo
-app.post('/api/todos', async (c) => {
-    const token = getCookie(c, 'token');
-    if (!token) return c.json({ success: false, message: Unauthorized }, 401);
-    try {
-        const user = jwt.verify(token, process.env.JWT_SECRET);
-        const { note } = await c.req.json();
-        const newTodo = await db.insert(todos).values({ note, userId: user.id }).returning();
-        return c.json({ success: true, data: newTodo[0] }, 201);
-    } catch (error) {
-        return c.json({ success: false, message: 'Unauthorized' }, 401);
-    }
-});
-
-// Read Todo 
-app.get('/api/todos', async (c) => {
-    const token = getCookie(c, 'token');
-    if (!token) return c.json({ success: false, message: 'Unauthorized' }, 401);
-    try {
-        const user = jwt.verify(token, process.env.JWT_SECRET);
-        const userTodos = await db.query.todos.findMany({ where: (todos, { eq }) => eq(todos.userId, user.id )});
-        return c.json({ success: true, data: userTodos });
-    } catch (error) {
-        return c.json({ success: false, message: 'Unauthorized' }, 401);
-    }
-})
-
+// Auth Function
 const authMiddleware = async (c, next) => {
     // 1. Ambil Kunci (Token) dari Cookie
     const token = getCookie(c, 'token'); 
@@ -116,6 +84,35 @@ const authMiddleware = async (c, next) => {
         return c.json({ success: false, message: 'Unauthorized: Invalid token' }, 401);
     }
 };
+
+// Logout
+app.post('/api/logout', (c) => {
+    setCookie(c, 'token', '', { maxAge: -1 });
+    return c.json({ success: true, message: 'Logout berhasil' });
+});
+
+// Api add Todo
+app.post('/api/todos', authMiddleware, async (c) => {
+    try {
+        const user = c.get('user');
+        const { note } = await c.req.json();
+        const newTodo = await db.insert(todos).values({ note, userId: user.id }).returning();
+        return c.json({ success: true, data: newTodo[0] }, 201);
+    } catch (error) {
+        return c.json({ success: false, message: 'Unauthorized' }, 401);
+    }
+});
+
+// Read Todo 
+app.get('/api/todos', authMiddleware, async (c) => {
+    try {
+        const user = c.get('user');
+        const userTodos = await db.query.todos.findMany({ where: (todos, { eq }) => eq(todos.userId, user.id )});
+        return c.json({ success: true, data: userTodos });
+    } catch (error) {
+        return c.json({ success: false, message: 'Unauthorized' }, 401);
+    }
+})
 
 // Update Status 
 app.put('api/todos/:id/status', authMiddleware, async (c) => { 

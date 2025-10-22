@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Todos</title>
+    <link rel="stylesheet" href="/todos/style-light.css">
 </head>
 <body>
     <div class="container">
         <header>
             <h1>Hello, <span id="username"></span>!</h1>
-        <a href="/logout/">Logout</a>
+            <a href="/logout/">Logout</a>
         </header>
 
         <main>
@@ -60,6 +61,11 @@
                         li.id = `todo${todo.id}`
                         li.innerHTML = `<input type="checkbox" id='check${todo.id}' /><span id="span${todo.id}">${todo.note}</span><button id='del${todo.id}'>delete</button>`
                         todoList.appendChild(li);
+                        const checkStatus = todo.status;
+                        if (checkStatus == 'completed') {
+                            document.getElementById(`span${todo.id}`).style.textDecoration = 'line-through'
+                            document.getElementById(`check${todo.id}`).checked = true;
+                        }
                         document.getElementById(`check${todo.id}`).addEventListener("change", async function() {
                             const newStatus = this.checked ? "completed": "pending";
                             const text = document.getElementById(`span${todo.id}`)

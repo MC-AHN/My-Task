@@ -1,0 +1,205 @@
+body {
+    /* Latar Belakang: Kanvas bersih untuk pekerjaan Anda. */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5; /* Abu-abu sangat muda */
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    margin: 0;
+}
+
+.container {
+    /* Kotak Utama: Papan tulis tempat semua daftar. */
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px; /* Batasi lebar agar fokus */
+    padding: 30px;
+}
+
+/* --- Bagian Header --- */
+header {
+    /* Bagian Atas: Seperti judul buku. */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 15px;
+}
+
+header h1 {
+    color: #333;
+    font-size: 24px;
+    margin: 0;
+}
+
+header a {
+    /* Tombol Logout: Tombol keluar. */
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 8px 12px;
+    border: 1px solid #007bff;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+header a:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+/* --- Bagian Form Tambah Todo --- */
+#addTodoForm {
+    /* Formulir Tambah: Seperti tempat menulis ide baru. */
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+#noteInput {
+    flex-grow: 1; /* Ambil semua ruang yang tersisa */
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+#addTodoForm button[type="submit"] {
+    /* Tombol Tambah: Tombol plus. */
+    background-color: #28a745; /* Hijau */
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+#addTodoForm button[type="submit"]:hover {
+    background-color: #1e7e34;
+}
+
+/* --- Bagian Daftar Todo --- */
+#todoList {
+    /* Daftar Tugas: Baris-baris pekerjaan. */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#todoList li {
+    /* Item Tugas: Satu tugas per baris. */
+    display: flex;
+    align-items: center;
+    background-color: #f9f9f9;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    border-left: 5px solid #007bff; /* Garis biru sebagai penanda */
+    transition: background-color 0.3s;
+}
+
+#todoList li:hover {
+    background-color: #f0f0f0;
+}
+
+#todoList li input[type="checkbox"] {
+    /* Checkbox Status: Kotak centang. */
+    margin-right: 15px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+#todoList li span {
+    /* Teks Tugas: Isi tugas. */
+    flex-grow: 1;
+    font-size: 17px;
+    color: #444;
+    word-break: break-word; /* Agar teks panjang tidak meluber */
+}
+
+#todoList li button {
+    /* Tombol Hapus: Tombol X. */
+    background-color: #dc3545; /* Merah */
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 15px;
+    transition: background-color 0.3s;
+}
+
+#todoList li button:hover {
+    background-color: #c82333;
+}
+
+/* --- Gaya untuk Tombol Sakelar (TOGGLE SWITCH) - MODE TERANG --- */
+.mode-switcher {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mode-text {
+    font-size: 14px;
+    color: #444; /* Teks agak gelap */
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc; /* Latar saat OFF (Terang) */
+    transition: 0.4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white; /* Handle putih */
+    transition: 0.4s;
+}
+
+/* Ketika ON (Beralih ke Gelap) */
+input:checked + .slider {
+    background-color: #58a4b0; /* Warna biru gelap saat ON */
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.slider.round {
+    border-radius: 24px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
