@@ -87,7 +87,8 @@ My-Task/
 ## 📸 Screenshot
 Example:  
 ```
-![My Task App Screenshot in Todos page](./public/asset/Screenshot202025-10-2220074558.png)
+![My Task App Screenshot in Todos page]<img width="1920" height="1080" alt="Screenshot2025-10-22074558" src="https://github.com/user-attachments/assets/173b3541-61b3-4332-9ddf-081b490ff9b3" />
+
 ```
 
 ---
