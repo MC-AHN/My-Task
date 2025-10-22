@@ -1,59 +1,107 @@
-Secure Hono & Drizzle Todo App
-License: MIT Technology: Hono Database: Drizzle ORM
+# 📝 My Task App
 
-Aplikasi daftar tugas sederhana (To-do List) full-stack yang dibangun dengan backend Hono (dijalankan di Node.js/Bun) dan Drizzle ORM untuk PostgreSQL, dengan autentikasi berbasis JWT Cookies.
+A simple and minimalistic **To-Do List web app** built using **Hono**, **Drizzle ORM**, and **Supabase**.  
+This project allows users to create, read, update, and delete tasks easily — focused on simplicity and usability.
 
-🌟 Fitur Utama
-Autentikasi Aman: Sign Up dan Login menggunakan JWT yang disimpan dalam HTTP-only cookies.
+---
 
-CRUD Tasks: Membuat, mengambil, mengubah status, dan menghapus tugas.
+## 🚀 Live Demo
+👉 [https://my-task-omega.vercel.app](https://my-task-omega.vercel.app)
 
-Authorisasi: Setiap tugas terikat pada user.id dan hanya dapat dimodifikasi oleh pemiliknya.
+---
 
-Client-Side Vanilla JS: Frontend diimplementasikan dengan HTML murni dan JavaScript tanpa framework modern.
+## ✨ Features
+- 🆕 **Create** new tasks  
+- 👀 **Read** your existing tasks  
+- ✏️ **Update** tasks you want to change  
+- 🗑️ **Delete** tasks that are done  
 
-🛠️ Persiapan dan Instalasi
-Proyek ini membutuhkan Node.js (disarankan) atau Bun untuk menjalankannya.
+---
 
-1. Klon Repositori
-Perintah klon repositori: git clone [URL_REPOSITORY_ANDA]
+## 🧰 Tech Stack
+- **Frontend:** HTML, CSS  
+- **Backend:** Hono (TypeScript)  
+- **Database:** Supabase with Drizzle ORM  
+- **Deployment:** Vercel  
 
-Lalu masuk ke direktori: cd nama-folder-proyek
+---
 
-2. Instal Dependensi
-Anda harus menginstal semua dependensi yang digunakan proyek ini:
+## ⚙️ Installation & Setup
+Follow these steps to run the project locally:
 
-Perintah instalasi: npm install hono @hono/node-server postgres jwt bcryptjs drizzle-orm dotenv
+### 1. Clone the repository
+```bash
+git clone https://github.com/MC-AHN/My-Task.git
+```
 
-Perintah instalasi Drizzle Kit: npm install -D drizzle-kit
+### 2. Go to the project folder
+```bash
+cd My-Task
+```
 
-3. Konfigurasi Environment (.env)
-Buat file bernama .env di root folder proyek dan isi dengan variabel-variabel sensitif Anda (tanpa tanda kutip):
+### 3. Install dependencies
+```bash
+npm install
+```
 
-DATABASE_URL=postgres://[USER]:[PASSWORD]@[HOST]:[PORT]/[DB_NAME] JWT_SECRET=Tulis_Kunci_Rahasia_yang_Sangat_Panjang_disini_untuk_JWT
+### 4. Set up environment variables
+Create a `.env` file and add your **Supabase URL** and **API Key**:
+```
+SUPABASE_URL=your_supabase_url
+SUPABASE_KEY=your_supabase_key
+```
 
-⚙️ Menjalankan Proyek
-1. Migrasi Database (Wajib)
-Jalankan skrip Drizzle untuk menerapkan skema database: npx drizzle-kit push:pg
+### 5. Run the development server
+```bash
+npm run dev
+```
 
-2. Seed Database (Opsional)
-Untuk mengisi database dengan data awal: node db/seed.js
+Your app will be available at **http://localhost:3000**
 
-3. Memulai Server
-Jalankan server backend: node index.js
+---
 
-Server akan berjalan di http://localhost:3000 (atau port yang Anda atur).
+## 📂 Folder Structure
+```
+My-Task/
+│
+├── public/         # Static assets
+├── src/
+│   ├── routes/     # Hono routes
+│   ├── db/         # Drizzle ORM schema
+│   ├── utils/      # Helper functions
+│   └── index.ts    # Main app entry
+├── .env.example
+├── package.json
+└── README.md
+```
 
-🧭 Struktur Proyek
-.
-├── db/                        # Logika Drizzle ORM
-│   ├── index.js               # Inisialisasi DB connection
-│   └── schema.js              # Definisi skema tabel (users, todos)
-├── drizzle/                   # Folder hasil migrasi Drizzle Kit
-├── public/                    # Frontend (Static Files)
-│   ├── index.html             # Landing page
-│   ├── login/index.html
-│   └── todos/index.html       # Halaman utama aplikasi
-├── index.js                   # Main Server Hono (termasuk routing API)
-└── .env                       # Environment Variables (tidak di commit)
+---
 
+## 💡 Future Improvements
+- Add user login & authentication  
+- Add dark mode  
+- Add task reminders and deadlines  
+
+---
+
+## 📸 Screenshot
+Example:  
+```
+![My Task App Screenshot in Todos page](./public/asset/Screenshot%202025-10-22%20074558.png)
+```
+
+---
+
+## 📜 License
+This project is licensed under the **MIT License** — you’re free to use, modify, and share it,  
+but please give credit to the original author.
+
+---
+
+## 👤 Author
+**MC-AHN**  
+GitHub: [@MC-AHN](https://github.com/MC-AHN)  
+
+---
+
+> Made with ❤️ for learning, building, and sharing.
