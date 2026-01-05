@@ -2,7 +2,7 @@
   "name": "my-task",
   "version": "1.0.0",
   "type": "module",
-  "description": "",
+  "description": "A simple and minimalistic **To-Do List web app** built using **Hono**, **Drizzle ORM**, and **Supabase**.   This project allows users to create, read, update, and delete tasks easily — focused on simplicity and usability.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

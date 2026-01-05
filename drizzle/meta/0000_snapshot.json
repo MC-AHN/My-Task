@@ -1,11 +1,11 @@
 {
-  "id": "2bbd50f9-3855-4715-b33e-ea2a59f6a3e7",
+  "id": "7a1011df-e017-4d77-84dd-e81350de3299",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.todos": {
-      "name": "todos",
+    "public.todos_my_task": {
+      "name": "todos_my_task",
       "schema": "",
       "columns": {
         "id": {
@@ -25,14 +25,21 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "todos_user_id_users_id_fk": {
-          "name": "todos_user_id_users_id_fk",
-          "tableFrom": "todos",
-          "tableTo": "users",
+        "todos_my_task_user_id_users_my_task_id_fk": {
+          "name": "todos_my_task_user_id_users_my_task_id_fk",
+          "tableFrom": "todos_my_task",
+          "tableTo": "users_my_task",
           "columnsFrom": [
             "user_id"
           ],
@@ -49,8 +56,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.users": {
-      "name": "users",
+    "public.users_my_task": {
+      "name": "users_my_task",
       "schema": "",
       "columns": {
         "id": {
@@ -76,8 +83,8 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "users_username_unique": {
-          "name": "users_username_unique",
+        "users_my_task_username_unique": {
+          "name": "users_my_task_username_unique",
           "nullsNotDistinct": false,
           "columns": [
             "username"

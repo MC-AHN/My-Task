@@ -9,8 +9,7 @@ import { setCookie } from 'hono/cookie';
 import { getCookie } from 'hono/cookie';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { and, eq } from 'drizzle-orm'; // Tambahkan ini di file API utama kamu
-import { isMiddleware } from 'hono/utils/handler';
-import { auth } from 'hono/utils/basic-auth';
+
 
 const app = new Hono();
 
