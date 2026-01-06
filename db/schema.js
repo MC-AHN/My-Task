@@ -1,4 +1,5 @@
-import { pgTable, serial, varchar, text, integer, } from 'drizzle-orm/pg-core';
+import { date } from 'drizzle-orm/mysql-core';
+import { pgTable, serial, varchar, text, integer, timestamp, } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users_my_task', {
     id: serial('id').primaryKey(),
@@ -10,5 +11,7 @@ export const todos = pgTable('todos_my_task', {
     id: serial('id').primaryKey(),
     note: text('note').notNull(),
     userId: integer('user_id').references(() => users.id).notNull(),
-    status: varchar('status', { length: 50 }).default('pending').notNull()
+    status: varchar('status', { length: 50 }).default('pending').notNull(),
+    createAt: timestamp('create_at', { mode: 'string' }).defaultNow().notNull(),
+    completeAt: timestamp('complete_at', { mode: 'string' })
 });

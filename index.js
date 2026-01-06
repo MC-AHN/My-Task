@@ -95,7 +95,7 @@ app.post('/api/todos', authMiddleware, async (c) => {
     try {
         const user = c.get('user');
         const { note } = await c.req.json();
-        const newTodo = await db.insert(todos).values({ note, userId: user.id }).returning();
+        const newTodo = await db.insert(todos).values({ note, userId: user.id}).returning();
         return c.json({ success: true, data: newTodo[0] }, 201);
     } catch (error) {
         return c.json({ success: false, message: 'Unauthorized' }, 401);
@@ -114,21 +114,21 @@ app.get('/api/todos', authMiddleware, async (c) => {
 })
 
 // Update Status 
-app.put('api/todos/:id/status', authMiddleware, async (c) => { 
+app.put('/api/todos/:id/status', authMiddleware, async (c) => { 
     try {
         const user = c.get('user');
         const id = parseInt(c.req.param('id')); 
         const { status } = await c.req.json(); 
-        const updateTodo = await db.update(todos).set({ status }).where(and(eq(todos.id, id), eq(todos.userId, user.id))).returning()
+        const completeAt = (status === 'complete') ? new Date().toISOString() : null
+        const updateTodo = await db.update(todos).set({ status, completeAt }).where(and(eq(todos.id, id), eq(todos.userId, user.id))).returning()
         if(updateTodo.length === 0) return c.json({ success: false, message: 'Todo not found' }, 404);
         return c.json({ success: true, data: updateTodo[0] });
     } catch (error) {
-        return c.json({ success: false, message: 'Unauthorized' }, 401);
+        return c.json({ success: false, message: `Error: ${error}` }, 401);
     }
 })
 
 // Delete todo
-// DI SERVER HONO/NODE.JS KAMU
 
 app.delete('/api/todos/:id', authMiddleware, async (c) => {
     // Di sini, 'authMiddleware' sudah memastikan user ada
