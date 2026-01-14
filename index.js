@@ -5,14 +5,13 @@ import { db } from './db/index.js';
 import { users, todos } from './db/schema.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { setCookie } from 'hono/cookie';
 import { getCookie } from 'hono/cookie';
 import { serveStatic } from '@hono/node-server/serve-static';
-import { and, eq } from 'drizzle-orm'; // Tambahkan ini di file API utama kamu
 import readTodo from './APIs/readTodo.js';
 import updateStatus from './APIs/updateStatus.js';
 import deleteTodo from './APIs/deleteTodo.js';
 import logout from './APIs/logout.js';
+import login from './APIs/login.js';
 
 
 const app = new Hono();
@@ -33,21 +32,7 @@ app.post('/api/register', async (c) => {
 });
 
 // Login
-app.post('/api/login', async (c) => {
-    const { username, password } = await c.req.json();
-    const user = await db.query.users.findFirst({ where: (users, { eq }) => eq(users.username, username) });
-
-    if(!user) return c.json({ success: false, message: 'Username atau password salah' }, 401);
-
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if(!isPasswordValid) return c.json({ success: false, message: 'Username atau Password salah'}, 401);
-
-    const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-    setCookie(c, 'token', token, { httpOnly: true, sameSite: 'Lax', maxAge: 3600 });
-
-    return c.json({ success: true, message: 'Login Berhasil' });
-})
+app.post('/api/login', login)
 
 // Authentication
 app.get('/api/me', (c) => {
