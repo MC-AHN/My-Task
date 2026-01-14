@@ -2,8 +2,7 @@ import 'dotenv/config';
 import { Hono } from 'hono';
 import { serve } from '@hono/node-server';
 import { db } from './db/index.js';
-import { users, todos } from './db/schema.js';
-import bcrypt from 'bcryptjs';
+import { todos } from './db/schema.js';
 import jwt from 'jsonwebtoken';
 import { getCookie } from 'hono/cookie';
 import { serveStatic } from '@hono/node-server/serve-static';
@@ -12,6 +11,7 @@ import updateStatus from './APIs/updateStatus.js';
 import deleteTodo from './APIs/deleteTodo.js';
 import logout from './APIs/logout.js';
 import login from './APIs/login.js';
+import register from './APIs/register.js';
 
 
 const app = new Hono();
@@ -19,17 +19,7 @@ const app = new Hono();
 app.use('/*', serveStatic({ root: './public' }));
 
 // Register 
-app.post('/api/register', async (c) => {
-    try {
-        const { username, password } = await c.req.json();
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = await db.insert(users).values({ username, password: hashedPassword }).returning({ id: users.id, username: users.username });
-
-        return c.json({ success: true, data: newUser[0] }, 201);
-    } catch (error) {
-        return c.json({ success: false, message: 'Registrasi Gagal' }, 404);
-    }
-});
+app.post('/api/register', register);
 
 // Login
 app.post('/api/login', login)
