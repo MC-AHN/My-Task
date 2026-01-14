@@ -15,6 +15,20 @@
       "when": 1767611494651,
       "tag": "0001_loving_wild_child",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1768308733292,
+      "tag": "0002_robust_leper_queen",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1768310937675,
+      "tag": "0003_mean_vance_astro",
+      "breakpoints": true
     }
   ]
 }

@@ -9,6 +9,7 @@ import { setCookie } from 'hono/cookie';
 import { getCookie } from 'hono/cookie';
 import { serveStatic } from '@hono/node-server/serve-static';
 import { and, eq } from 'drizzle-orm'; // Tambahkan ini di file API utama kamu
+import readTodo from './APIs/readTodo.js';
 
 
 const app = new Hono();
@@ -94,24 +95,16 @@ app.post('/api/logout', (c) => {
 app.post('/api/todos', authMiddleware, async (c) => {
     try {
         const user = c.get('user');
-        const { note } = await c.req.json();
-        const newTodo = await db.insert(todos).values({ note, userId: user.id}).returning();
+        const { note, deadline } = await c.req.json();
+        const newTodo = await db.insert(todos).values({ note, deadline, userId: user.id}).returning();
         return c.json({ success: true, data: newTodo[0] }, 201);
     } catch (error) {
-        return c.json({ success: false, message: 'Unauthorized' }, 401);
+        return c.json({ success: false, message: `Erorr: ${error}` }, 401);
     }
 });
 
 // Read Todo 
-app.get('/api/todos', authMiddleware, async (c) => {
-    try {
-        const user = c.get('user');
-        const userTodos = await db.query.todos.findMany({ where: (todos, { eq }) => eq(todos.userId, user.id )});
-        return c.json({ success: true, data: userTodos });
-    } catch (error) {
-        return c.json({ success: false, message: 'Unauthorized' }, 401);
-    }
-})
+app.get('/api/todos', authMiddleware, readTodo)
 
 // Update Status 
 app.put('/api/todos/:id/status', authMiddleware, async (c) => { 
@@ -119,17 +112,16 @@ app.put('/api/todos/:id/status', authMiddleware, async (c) => {
         const user = c.get('user');
         const id = parseInt(c.req.param('id')); 
         const { status } = await c.req.json(); 
-        const completeAt = (status === 'complete') ? new Date().toISOString() : null
+        const completeAt = (status === 'completed') ? new Date().toISOString() : null
         const updateTodo = await db.update(todos).set({ status, completeAt }).where(and(eq(todos.id, id), eq(todos.userId, user.id))).returning()
         if(updateTodo.length === 0) return c.json({ success: false, message: 'Todo not found' }, 404);
         return c.json({ success: true, data: updateTodo[0] });
     } catch (error) {
-        return c.json({ success: false, message: `Error: ${error}` }, 401);
+        return c.json({ success: false, message: `Error: ${error}` }, 500);
     }
 })
 
 // Delete todo
-
 app.delete('/api/todos/:id', authMiddleware, async (c) => {
     // Di sini, 'authMiddleware' sudah memastikan user ada
     const user = c.get('user'); 

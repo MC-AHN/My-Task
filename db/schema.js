@@ -1,4 +1,3 @@
-import { date } from 'drizzle-orm/mysql-core';
 import { pgTable, serial, varchar, text, integer, timestamp, } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users_my_task', {
@@ -13,5 +12,6 @@ export const todos = pgTable('todos_my_task', {
     userId: integer('user_id').references(() => users.id).notNull(),
     status: varchar('status', { length: 50 }).default('pending').notNull(),
     createAt: timestamp('create_at', { mode: 'string' }).defaultNow().notNull(),
-    completeAt: timestamp('complete_at', { mode: 'string' })
+    completeAt: timestamp('complete_at', { mode: 'string' }),
+    deadline: timestamp('deadline', { mode: 'string'})
 });

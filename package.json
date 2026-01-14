@@ -5,11 +5,10 @@
   "description": "A simple and minimalistic **To-Do List web app** built using **Hono**, **Drizzle ORM**, and **Supabase**.   This project allows users to create, read, update, and delete tasks easily — focused on simplicity and usability.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "node db/seed.js",
-    "start": "node index.js"
+    "start": "node --watch index.js"
   },
   "keywords": [],
   "author": "",

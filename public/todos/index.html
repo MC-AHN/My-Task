@@ -1,144 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Todos</title>
-    <link rel="stylesheet" href="/todos/style-light.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Manager Premium</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/todos/style-light.css" />
+  </head>
+  <body>
     <div class="container">
-        <header>
-            <h1>Hello, <span id="username"></span>!</h1>
-            <a href="/logout/">Logout</a>
-        </header>
+      <header>
+        <div class="brand">
+          <h1>Task Executive</h1>
+          <p>Welcome, <span id="username">Premium Member</span></p>
+        </div>
+        <a href="/logout/" class="logout-btn">Sign Out</a>
+      </header>
 
-        <main>
-            <h2>Your Todos</h2>
-            <form id="addTodoForm">
-                <input type="text" id="noteInput" placeholder="What needs to be done?" required>
-                <button type="submit">Add</button>
-            </form>
-            <ul id="todoList"></ul>
-        </main>
+      <main>
+        <form id="addTodoForm">
+          <div class="inputDiv flex-note">
+            <label>What is your focus?</label>
+            <input
+              type="text"
+              id="noteInput"
+              class="input"
+              placeholder="Enter task objective..."
+              required
+            />
+          </div>
+          <div class="inputDiv flex-date">
+            <label>Target Deadline</label>
+            <input
+              type="datetime-local"
+              id="deadlineInput"
+              class="input"
+              required
+            />
+          </div>
+          <button type="submit" class="add-btn">Add Task</button>
+        </form>
+
+        <table id="todoList">
+          <thead>
+            <tr>
+              <th style="width: 40px"></th>
+              <th>Objective</th>
+              <th style="width: 200px">Target Date</th>
+              <th style="width: 200px">Timeline</th>
+              <th style="width: 100px"></th>
+            </tr>
+          </thead>
+          <tbody id="todoItems"></tbody>
+        </table>
+      </main>
     </div>
 
     <script>
-        const usernameSpan = document.getElementById('username');
-        const addTodoForm = document.getElementById('addTodoForm');
-        const noteInput = document.getElementById('noteInput');
-        const todoList = document.getElementById('todoList');
+      const usernameSpan = document.getElementById("username");
+      const addTodoForm = document.getElementById("addTodoForm");
+      const noteInput = document.getElementById("noteInput");
+      const deadlineInput = document.getElementById("deadlineInput");
+      const tBody = document.getElementById("todoItems");
 
-        // check login
-        (async () => {
-            try {
-                const response = await fetch('/api/me');
-                if (!response.ok) {
-                    window.location.href = '/login/';
-                    return;
-                }
-                const { success, data } = await response.json();
-                if (success) {
-                    usernameSpan.textContent = data.username;
-                    fetchTodos();
-                } else {
-                    window.location.href = '/login/';
-                }
-            } catch (error) {
-                window.location.href = '/login/';
-            }
-        })();
-        
-        // get and sbow todos
-        const fetchTodos = async () => {
-            try {
-                const response = await fetch('/api/todos');
-                const { success, data } = await response.json();
-                if (success) {
-                    todoList.innerHTML = '';
-                    data.forEach((todo) => {
-                        const li = document.createElement('li');
-                        li.id = `todo${todo.id}`
-                        li.innerHTML = `<input type="checkbox" id='check${todo.id}' /><span id="span${todo.id}">${todo.note}</span><button id='del${todo.id}'>delete</button>`
-                        todoList.appendChild(li);
-                        const checkStatus = todo.status;
-                        if (checkStatus == 'completed') {
-                            document.getElementById(`span${todo.id}`).style.textDecoration = 'line-through'
-                            document.getElementById(`check${todo.id}`).checked = true;
-                        }
-                        document.getElementById(`check${todo.id}`).addEventListener("change", async function() {
-                            const newStatus = this.checked ? "completed": "pending";
-                            const text = document.getElementById(`span${todo.id}`)
-                            try {
-                                const response = await fetch(`/api/todos/${todo.id}/status`, {
-                                    method: "PUT",
-                                    headers: { "Content-Type": 'application/json'},
-                                    credentials: 'include',
-                                    body: JSON.stringify({ "status": newStatus })
-                                }) 
-                                if (response.ok) {
-                                    text.style.textDecoration = newStatus ==="completed" ? 'line-through': 'none'
-                                } else {
-                                    console.log('Error', response.status);
-                                    this.checked = !this.checked;
-                                }
-                            } catch (error) {
-                                this.checked = !this.checked;
-                                console.error("Error, message", error);
-                            }
-                        })
-                        document.getElementById(`del${todo.id}`).addEventListener("click", async function() {
-                            const ask = confirm("Are you sure?")
-                            try {
-                                if (ask) {
-                                    const response = await fetch(`/api/todos/${todo.id}`, {
-                                        method: 'DELETE',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        credentials: 'include'
-                                    });
-
-                                    if (response.ok) {
-                                        const listItem = document.getElementById(`todo${todo.id}`)
-                                        if (listItem) {
-                                            listItem.remove()
-                                        }
-                                        console.log(`deleted successfully id ${todo.id}`)
-                                    } else {
-                                        alert('failed remove todo, try again')
-                                    }
-                                }
-                            } catch (error) {
-                                console.error('Error while remove', error)
-                            }
-                        })
-                    });
-                }
-            } catch (error) {
-                console.error('Failed get todos', error)
-            }
+      (async () => {
+        try {
+          const response = await fetch("/api/me", { credentials: "include" });
+          if (!response.ok) {
+            window.location.href = "/login/";
+            return;
+          }
+          const { success, data } = await response.json();
+          if (success) {
+            usernameSpan.textContent = data.username;
+            fetchTodos();
+          } else {
+            window.location.href = "/login/";
+          }
+        } catch (error) {
+          window.location.href = "/login/";
         }
+      })();
 
-        // add todo
-        addTodoForm.addEventListener('submit', async (e) => {
-            e.preventDefault()
-            const note = noteInput.value;
-            if (!note) return;
+      const fetchTodos = async () => {
+        try {
+          const response = await fetch("/api/todos", {
+            credentials: "include",
+          });
+          const { success, data } = await response.json();
+          if (success) {
+            tBody.innerHTML = "";
+            data.forEach((todo) => {
+              const opsi = {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              };
+              const tglIn = todo.createAt
+                ? new Date(todo.createAt).toLocaleDateString("en-US", opsi)
+                : "-";
+              const tglOut = todo.completeAt
+                ? new Date(todo.completeAt).toLocaleDateString("en-US", opsi)
+                : "-";
+              const tr = document.createElement("tr");
+              tr.id = `todo${todo.id}`;
+              const isCompleted = todo.status === "completed";
+              // Di dalam loop data.forEach((todo) => { ... })
+              const deadlineDate = todo.deadline
+                ? new Date(todo.deadline).toLocaleString("en-US", {
+                    day: "2-digit",
+                    month: "short",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })
+                : "No Deadline";
 
-            try {
-                const response = await fetch('/api/todos', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ note }),
-                })
-                const { success } = await response.json();
-                if (success) {
-                    noteInput.value = '';
+              tr.innerHTML = `
+    <td><input type="checkbox" id="check${todo.id}" ${
+                isCompleted ? "checked" : ""
+              } /></td>
+    <td id="span${todo.id}" style="${
+                isCompleted ? "text-decoration: line-through; color: #aaa;" : ""
+              }">
+        <strong>${todo.note}</strong>
+    </td>
+    <td>
+        <span class="deadline-badge">${deadlineDate}</span> </td>
+    <td>
+        <div class="date-info">Created: ${tglIn}</div>
+        <div class="date-info out">Finished: ${tglOut}</div>
+    </td>
+    <td><button class="btn-del" id="del${todo.id}">Delete</button></td>
+`;
+              tBody.appendChild(tr);
+
+              document
+                .getElementById(`check${todo.id}`)
+                .addEventListener("change", async function () {
+                  const newStatus = this.checked ? "completed" : "pending";
+                  try {
+                    await fetch(`/api/todos/${todo.id}/status`, {
+                      method: "PUT",
+                      headers: { "Content-Type": "application/json" },
+                      credentials: "include",
+                      body: JSON.stringify({ status: newStatus }),
+                    });
                     fetchTodos();
-                }
-            } catch (error) {
-                console.error('Failed add todo', error);
-            }
-        })
+                  } catch (e) {
+                    this.checked = !this.checked;
+                  }
+                });
+
+              document
+                .getElementById(`del${todo.id}`)
+                .addEventListener("click", async function () {
+                  if (confirm("Remove this task?")) {
+                    try {
+                      const res = await fetch(`/api/todos/${todo.id}`, {
+                        method: "DELETE",
+                        credentials: "include",
+                      });
+                      if (res.ok) tr.remove();
+                    } catch (e) {
+                      console.error(e);
+                    }
+                  }
+                });
+            });
+          }
+        } catch (error) {
+          console.error("Error", error);
+        }
+      };
+
+      addTodoForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        try {
+          const response = await fetch("/api/todos", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              note: noteInput.value,
+              deadline: deadlineInput.value,
+            }),
+            credentials: "include",
+          });
+          if (response.ok) {
+            noteInput.value = "";
+            deadlineInput.value = "";
+            fetchTodos();
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      });
     </script>
-</body>
+  </body>
 </html>

@@ -1,0 +1,1 @@
+ALTER TABLE "todos_my_task" ADD COLUMN "deadline" timestamp;

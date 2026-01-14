@@ -1,0 +1,1 @@
+ALTER TABLE "todos_my_task" ALTER COLUMN "create_at" SET DEFAULT now();
