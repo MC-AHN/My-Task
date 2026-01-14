@@ -12,6 +12,7 @@ import { and, eq } from 'drizzle-orm'; // Tambahkan ini di file API utama kamu
 import readTodo from './APIs/readTodo.js';
 import updateStatus from './APIs/updateStatus.js';
 import deleteTodo from './APIs/deleteTodo.js';
+import logout from './APIs/logout.js';
 
 
 const app = new Hono();
@@ -88,10 +89,7 @@ const authMiddleware = async (c, next) => {
 };
 
 // Logout
-app.post('/api/logout', (c) => {
-    setCookie(c, 'token', '', { maxAge: -1 });
-    return c.json({ success: true, message: 'Logout berhasil' });
-});
+app.post('/api/logout', logout);
 
 // Api add Todo
 app.post('/api/todos', authMiddleware, async (c) => {
