@@ -67,16 +67,7 @@ const authMiddleware = async (c, next) => {
 app.post('/api/logout', logout);
 
 // Api add Todo
-app.post('/api/todos', authMiddleware, async (c) => {
-    try {
-        const user = c.get('user');
-        const { note, deadline } = await c.req.json();
-        const newTodo = await db.insert(todos).values({ note, deadline, userId: user.id}).returning();
-        return c.json({ success: true, data: newTodo[0] }, 201);
-    } catch (error) {
-        return c.json({ success: false, message: `Erorr: ${error}` }, 401);
-    }
-});
+app.post('/api/todos', authMiddleware, );
 
 // Read Todo 
 app.get('/api/todos', authMiddleware, readTodo)
