@@ -3,43 +3,31 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Task Manager Premium</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap"
-      rel="stylesheet"
-    />
+    <title>Task Manager Pro</title>
     <link rel="stylesheet" href="/todos/style-light.css" />
   </head>
   <body>
     <div class="container">
       <header>
-        <div class="brand">
-          <h1>Task Executive</h1>
-          <p>Welcome, <span id="username">Premium Member</span></p>
-        </div>
-        <a href="/logout/" class="logout-btn">Sign Out</a>
+        <h1>Task Manager <span>Executive</span></h1>
+        <a href="/logout/" class="logout-btn">Logout Account</a>
       </header>
 
       <main>
         <form id="addTodoForm">
           <div class="inputDiv flex-note">
-            <label>What is your focus?</label>
+            <label>Task Objective</label>
             <input
               type="text"
               id="noteInput"
               class="input"
-              placeholder="Enter task objective..."
+              placeholder="What is your focus?"
               required
             />
           </div>
           <div class="inputDiv flex-date">
-            <label>Target Deadline</label>
-            <input
-              type="datetime-local"
-              id="deadlineInput"
-              class="input"
-              required
-            />
+            <label>Deadline (Optional)</label>
+            <input type="datetime-local" id="deadlineInput" class="input" />
           </div>
           <button type="submit" class="add-btn">Add Task</button>
         </form>
@@ -47,11 +35,11 @@
         <table id="todoList">
           <thead>
             <tr>
-              <th style="width: 40px"></th>
-              <th>Objective</th>
-              <th style="width: 200px">Target Date</th>
-              <th style="width: 200px">Timeline</th>
-              <th style="width: 100px"></th>
+              <th style="width: 5%"></th>
+              <th style="width: 45%">Objective</th>
+              <th style="width: 15%">Deadline</th>
+              <th style="width: 25%">Timeline</th>
+              <th style="width: 10%">Action</th>
             </tr>
           </thead>
           <tbody id="todoItems"></tbody>
@@ -59,146 +47,6 @@
       </main>
     </div>
 
-    <script>
-      const usernameSpan = document.getElementById("username");
-      const addTodoForm = document.getElementById("addTodoForm");
-      const noteInput = document.getElementById("noteInput");
-      const deadlineInput = document.getElementById("deadlineInput");
-      const tBody = document.getElementById("todoItems");
-
-      (async () => {
-        try {
-          const response = await fetch("/api/me", { credentials: "include" });
-          if (!response.ok) {
-            window.location.href = "/login/";
-            return;
-          }
-          const { success, data } = await response.json();
-          if (success) {
-            usernameSpan.textContent = data.username;
-            fetchTodos();
-          } else {
-            window.location.href = "/login/";
-          }
-        } catch (error) {
-          window.location.href = "/login/";
-        }
-      })();
-
-      const fetchTodos = async () => {
-        try {
-          const response = await fetch("/api/todos", {
-            credentials: "include",
-          });
-          const { success, data } = await response.json();
-          if (success) {
-            tBody.innerHTML = "";
-            data.forEach((todo) => {
-              const opsi = {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              };
-              const tglIn = todo.createAt
-                ? new Date(todo.createAt).toLocaleDateString("en-US", opsi)
-                : "-";
-              const tglOut = todo.completeAt
-                ? new Date(todo.completeAt).toLocaleDateString("en-US", opsi)
-                : "-";
-              const tr = document.createElement("tr");
-              tr.id = `todo${todo.id}`;
-              const isCompleted = todo.status === "completed";
-              // Di dalam loop data.forEach((todo) => { ... })
-              const deadlineDate = todo.deadline
-                ? new Date(todo.deadline).toLocaleString("en-US", {
-                    day: "2-digit",
-                    month: "short",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })
-                : "No Deadline";
-
-              tr.innerHTML = `
-    <td><input type="checkbox" id="check${todo.id}" ${
-                isCompleted ? "checked" : ""
-              } /></td>
-    <td id="span${todo.id}" style="${
-                isCompleted ? "text-decoration: line-through; color: #aaa;" : ""
-              }">
-        <strong>${todo.note}</strong>
-    </td>
-    <td>
-        <span class="deadline-badge">${deadlineDate}</span> </td>
-    <td>
-        <div class="date-info">Created: ${tglIn}</div>
-        <div class="date-info out">Finished: ${tglOut}</div>
-    </td>
-    <td><button class="btn-del" id="del${todo.id}">Delete</button></td>
-`;
-              tBody.appendChild(tr);
-
-              document
-                .getElementById(`check${todo.id}`)
-                .addEventListener("change", async function () {
-                  const newStatus = this.checked ? "completed" : "pending";
-                  try {
-                    await fetch(`/api/todos/${todo.id}/status`, {
-                      method: "PUT",
-                      headers: { "Content-Type": "application/json" },
-                      credentials: "include",
-                      body: JSON.stringify({ status: newStatus }),
-                    });
-                    fetchTodos();
-                  } catch (e) {
-                    this.checked = !this.checked;
-                  }
-                });
-
-              document
-                .getElementById(`del${todo.id}`)
-                .addEventListener("click", async function () {
-                  if (confirm("Remove this task?")) {
-                    try {
-                      const res = await fetch(`/api/todos/${todo.id}`, {
-                        method: "DELETE",
-                        credentials: "include",
-                      });
-                      if (res.ok) tr.remove();
-                    } catch (e) {
-                      console.error(e);
-                    }
-                  }
-                });
-            });
-          }
-        } catch (error) {
-          console.error("Error", error);
-        }
-      };
-
-      addTodoForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        try {
-          const response = await fetch("/api/todos", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              note: noteInput.value,
-              deadline: deadlineInput.value,
-            }),
-            credentials: "include",
-          });
-          if (response.ok) {
-            noteInput.value = "";
-            deadlineInput.value = "";
-            fetchTodos();
-          }
-        } catch (error) {
-          console.error(error);
-        }
-      });
-    </script>
+    <script type="module" src="./script.js"></script>
   </body>
 </html>

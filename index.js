@@ -12,6 +12,7 @@ import deleteTodo from './APIs/deleteTodo.js';
 import logout from './APIs/logout.js';
 import login from './APIs/login.js';
 import register from './APIs/register.js';
+import addTodo from './APIs/addTodo.js';
 
 
 const app = new Hono();
@@ -67,7 +68,7 @@ const authMiddleware = async (c, next) => {
 app.post('/api/logout', logout);
 
 // Api add Todo
-app.post('/api/todos', authMiddleware, );
+app.post('/api/todos', authMiddleware, addTodo);
 
 // Read Todo 
 app.get('/api/todos', authMiddleware, readTodo)
