@@ -25,7 +25,6 @@ const checkAuth = async () => {
 
         // Cek apakah data user benar-benar ada
         if (result.success && result.data && result.data.username) {
-            usernameSpan.textContent = result.data.username;
             fetchTodos();
         } else {
             // Jika login sukses tapi data kosong, mungkin sesi bermasalah
